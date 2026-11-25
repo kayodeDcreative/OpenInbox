@@ -29,7 +29,7 @@ export function IntegrationsPage() {
   );
 }
 
-const PROVIDER_ACCENT: Record<ProviderType, string> = { resend: '#111111', brevo: '#0b996e', mailjet: '#fea500', cloudflare: '#f6821f', smtp: '#6366f1' };
+const PROVIDER_ACCENT: Record<ProviderType, string> = { resend: '#111111', brevo: '#0b996e', mailjet: '#fea500', cloudflare: '#f6821f', gately: '#0f3b29', smtp: '#6366f1' };
 
 function ProviderMark({ type, size = 38 }: { type: ProviderType; size?: number }) {
   const letter = { resend: 'R', brevo: 'B', mailjet: 'M', cloudflare: 'C', smtp: '@' }[type];
@@ -259,7 +259,9 @@ function ProviderCard({ provider: p, onChanged }: { provider: ProviderInfo; onCh
         <div className="border-t border-border px-5 py-3 text-xs text-muted text-pretty">
           {p.type === 'cloudflare'
             ? 'Cloudflare has no sending-domain API: enable Email Sending for each domain in the Cloudflare dashboard (Email Service > Email Sending). Cloudflare manages SPF and DKIM once the domain is onboarded there.'
-            : "SMTP has no domain API: publish your SMTP provider's SPF and DKIM records for each domain yourself. Domain health shows whether SPF includes them."}
+            : p.type === 'gately'
+              ? 'Gately domains are verified in the Gately dashboard. Make sure each domain you send from is verified there.'
+              : "SMTP has no domain API: publish your SMTP provider's SPF and DKIM records for each domain yourself. Domain health shows whether SPF includes them."}
         </div>
       )}
       {editing && (
@@ -312,11 +314,12 @@ function credentialFields(type: ProviderType) {
       { key: 'apiKey', label: 'API key', placeholder: '' },
       { key: 'apiSecret', label: 'Secret key', placeholder: '', secret: true },
     ];
-  return [{ key: 'apiKey', label: 'API key', placeholder: type === 'resend' ? 're_...' : 'xkeysib-...', secret: true }];
+  return [{ key: 'apiKey', label: 'API key', placeholder: type === 'resend' ? 're_...' : type === 'gately' ? '' : 'xkeysib-...', secret: true }];
 }
 
 const KEY_HELP: Record<ProviderType, { href: string; text: string }> = {
   cloudflare: { href: 'https://developers.cloudflare.com/email-service/', text: 'Sends with the Cloudflare API token OpenInbox already uses, so there is no key to paste. Cloudflare requires a Workers Paid plan, and each sending domain has to be onboarded in the dashboard first.' },
+  gately: { href: 'https://usegately.com', text: 'Paste your Gately API key. Sending domains are verified in the Gately dashboard, not here.' },
   resend: { href: 'https://resend.com/api-keys', text: 'Create a key with Full access in Resend → API Keys (full access lets OpenInbox verify domains for you).' },
   brevo: { href: 'https://app.brevo.com/settings/keys/api', text: 'Create an API key in Brevo → SMTP & API → API Keys.' },
   mailjet: { href: 'https://app.mailjet.com/account/apikeys', text: 'Find your API key and secret key in Mailjet → Account settings → API Key Management.' },

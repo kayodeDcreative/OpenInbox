@@ -9,6 +9,7 @@ export interface Env {
   CF_API_TOKEN?: string;
   CF_API_BASE?: string;
   RESEND_API_BASE?: string;
+  GATELY_API_BASE?: string;
   BREVO_API_BASE?: string;
   MAILJET_API_BASE?: string;
   GITHUB_API_BASE?: string;

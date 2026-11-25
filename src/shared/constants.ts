@@ -37,7 +37,7 @@ export type RemoteImagesPolicy = 'block' | 'allow';
 // Senders' BIMI logos next to their mail, for the whole instance.
 export type SenderLogosPolicy = 'off' | 'on';
 
-export const PROVIDER_TYPES = ['resend', 'brevo', 'mailjet', 'cloudflare', 'smtp'] as const;
+export const PROVIDER_TYPES = ['resend', 'brevo', 'mailjet', 'cloudflare', 'gately', 'smtp'] as const;
 export type ProviderType = (typeof PROVIDER_TYPES)[number];
 
 // Free-tier sending caps, used as defaults when a provider is connected. Users can change them.
@@ -83,6 +83,15 @@ export const PROVIDER_INFO: Record<ProviderType, {
     dailyLimit: null,
     monthlyLimit: 3000,
     freeTier: '3,000 emails/month on Workers Paid',
+    hasDomainApi: false,
+    hasWebhookApi: false,
+  },
+  gately: {
+    label: 'Gately',
+    website: 'https://usegately.com',
+    dailyLimit: null,
+    monthlyLimit: null,
+    freeTier: 'Depends on your Gately plan',
     hasDomainApi: false,
     hasWebhookApi: false,
   },

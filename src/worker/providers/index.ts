@@ -5,12 +5,13 @@ import { badRequest } from '../lib/errors';
 import type { ProviderType } from '../../shared/constants';
 import { BrevoAdapter, type BrevoConfig } from './brevo';
 import { CloudflareAdapter, type CloudflareConfig } from './cloudflare';
+import { GatelyAdapter, type GatelyConfig } from './gately';
 import { MailjetAdapter, type MailjetConfig } from './mailjet';
 import { ResendAdapter, type ResendConfig } from './resend';
 import { SmtpAdapter, type SmtpConfig } from './smtp';
 import type { ProviderAdapter } from './types';
 
-export type ProviderConfig = ResendConfig | BrevoConfig | MailjetConfig | CloudflareConfig | SmtpConfig;
+export type ProviderConfig = ResendConfig | BrevoConfig | MailjetConfig | CloudflareConfig | GatelyConfig | SmtpConfig;
 
 export interface ProviderRow {
   id: number;
@@ -39,6 +40,8 @@ export function createAdapter(env: Env, type: ProviderType, config: ProviderConf
       return new MailjetAdapter(config as MailjetConfig, env.MAILJET_API_BASE || undefined);
     case 'cloudflare':
       return new CloudflareAdapter(env);
+    case 'gately':
+      return new GatelyAdapter(config as GatelyConfig, env.GATELY_API_BASE || undefined);
     case 'smtp':
       return new SmtpAdapter(config as SmtpConfig);
     default:
@@ -54,7 +57,7 @@ export async function adapterFor(env: Env, row: ProviderRow): Promise<ProviderAd
 export function parseProviderConfig(type: ProviderType, input: Record<string, unknown>): ProviderConfig {
   const str = (k: string) => (typeof input[k] === 'string' ? (input[k] as string).trim() : '');
   if (type === 'cloudflare') return {};
-  if (type === 'resend' || type === 'brevo') {
+  if (type === 'resend' || type === 'brevo' || type === 'gately') {
     if (!str('apiKey')) throw badRequest('Enter the API key.');
     return { apiKey: str('apiKey') };
   }
